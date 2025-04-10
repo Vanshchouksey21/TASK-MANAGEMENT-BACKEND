@@ -3,6 +3,7 @@ const userModel = require("../models/UserModel");
 const PassGenrator = require("../middleware/passwordGenrator");
 const sendEmail = require("../middleware/sendEmail"); 
 const bcrypt = require("bcrypt");
+const taskModel = require("../models/TaskModel");
 
 const adminlogin = async (req, res) => {
   const { adminid, password } = req.body;
@@ -57,4 +58,31 @@ const usercreation = async (req, res) => {
   }
 };
 
-module.exports = { adminlogin, usercreation };
+
+const userdisplay = async (req, res) => {
+  const user = await userModel.find();
+  res.status(200).send(user);
+}
+
+
+
+const assigntask = async (req, res) => {
+  const { userId, task, taskDesc, completionDate } = req.body;
+
+  try {
+    const createdTask = await taskModel.create({
+      task,
+      taskDesc,
+      completionDate,
+      userid: userId,
+    });
+
+    console.log("✅ Task assigned to user:", createdTask);
+    res.status(200).send("Task assigned successfully!");
+  } catch (error) {
+    console.log("❌ Error assigning task:", error);
+    res.status(500).send("Internal server error");
+  }
+};
+
+module.exports = { adminlogin, usercreation, userdisplay, assigntask };
