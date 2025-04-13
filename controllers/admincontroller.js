@@ -85,4 +85,37 @@ const assigntask = async (req, res) => {
   }
 };
 
-module.exports = { adminlogin, usercreation, userdisplay, assigntask };
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await userModel.findByIdAndDelete(id);
+    res.status(200).send("User deleted successfully");
+  } catch (err) {
+    res.status(500).send("Error deleting user");
+  }
+};
+
+const updatetaskstatus = async (req, res) => {
+  const { taskId, status } = req.body;
+
+  try {
+    const task = await taskModel.findByIdAndUpdate(taskId, { status }, { new: true });
+    res.status(200).json({ message: "Task status updated", task });
+  } catch (err) {
+    console.error("❌ Error updating task status:", err);
+    res.status(500).json({ message: "Failed to update status" });
+  }
+};
+
+
+
+const getUserTasks = async (req, res) => {
+  try {
+    const tasks = await taskModel.find({ userid: req.params.userId });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).send("Failed to fetch tasks");
+  }
+};
+module.exports = { adminlogin, usercreation, userdisplay, assigntask , deleteUser, updatetaskstatus , getUserTasks };
